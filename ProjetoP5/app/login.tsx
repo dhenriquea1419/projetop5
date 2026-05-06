@@ -31,7 +31,7 @@ export default function LoginScreen() {
       if (success) {
         router.replace('/');
       }
-    } catch (err) {
+    } catch {
       // Erro já é exibido pelo alert ou estado
     }
   };
@@ -45,7 +45,10 @@ export default function LoginScreen() {
         <View style={styles.content}>
           {/* Logo/Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>SapéPharma</Text>
+            <View style={styles.titleRow}>
+              <Text style={styles.symbol}>⚕️</Text>
+              <Text style={styles.title}>SapéPharma</Text>
+            </View>
             <Text style={styles.subtitle}>Sistema de Vendas e Controle para Farmácia</Text>
           </View>
 
@@ -132,42 +135,54 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#ffffff',
   },
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
+    backgroundColor: '#ffffff',
   },
   content: {
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
     paddingVertical: 40,
+    backgroundColor: '#ffffff',
   },
   header: {
     alignItems: 'center',
     marginBottom: 40,
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  symbol: {
+    fontSize: 34,
+    marginRight: 10,
+    color: '#14838d',
+  },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#2c5aa0',
+    color: '#14838d',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: '#4d7d7f',
     fontWeight: '500',
   },
   form: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 24,
+    backgroundColor: '#f8fcfd',
+    borderRadius: 16,
+    padding: 26,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
   },
   inputContainer: {
     marginBottom: 20,
@@ -180,21 +195,21 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 8,
+    borderColor: '#d6e7e9',
+    borderRadius: 10,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 14,
     fontSize: 16,
-    color: '#333',
-    backgroundColor: '#fafafa',
+    color: '#0f3a3f',
+    backgroundColor: '#ffffff',
   },
   passwordInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 8,
-    backgroundColor: '#fafafa',
+    borderColor: '#d6e7e9',
+    borderRadius: 10,
+    backgroundColor: '#ffffff',
     paddingRight: 12,
   },
   passwordInput: {
@@ -206,7 +221,7 @@ const styles = StyleSheet.create({
   },
   showPasswordButton: {
     fontSize: 12,
-    color: '#2c5aa0',
+    color: '#14838d',
     fontWeight: '600',
     padding: 4,
   },
@@ -217,8 +232,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   button: {
-    backgroundColor: '#2c5aa0',
-    borderRadius: 8,
+    backgroundColor: '#14838d',
+    borderRadius: 10,
     paddingVertical: 14,
     alignItems: 'center',
     marginTop: 20,
@@ -233,16 +248,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   demoContainer: {
-    backgroundColor: '#e3f2fd',
-    borderRadius: 8,
+    backgroundColor: '#e8f6f7',
+    borderRadius: 10,
     padding: 16,
     borderLeftWidth: 4,
-    borderLeftColor: '#2c5aa0',
+    borderLeftColor: '#14838d',
   },
   demoTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1565c0',
+    color: '#0f4f55',
     marginBottom: 12,
   },
   demoItem: {
@@ -250,7 +265,7 @@ const styles = StyleSheet.create({
   },
   demoLabel: {
     fontSize: 12,
-    color: '#1565c0',
+    color: '#0f4f55',
     fontWeight: '500',
   },
   demoValue: {
