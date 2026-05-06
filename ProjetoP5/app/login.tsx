@@ -40,7 +40,7 @@ export default function LoginScreen() {
         <View style={styles.content}>
           {/* Logo/Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>PharmaStock</Text>
+            <Text style={styles.title}>Sapé Pharma</Text>
             <Text style={styles.subtitle}>Sistema de Vendas e Controle para Farmácia</Text>
           </View>
 
