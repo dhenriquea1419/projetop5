@@ -45,14 +45,10 @@ export default function LoginScreen() {
         <View style={styles.content}>
           {/* Logo/Header */}
           <View style={styles.header}>
-<<<<<<< HEAD
             <View style={styles.titleRow}>
               <Text style={styles.symbol}>⚕️</Text>
               <Text style={styles.title}>SapéPharma</Text>
             </View>
-=======
-            <Text style={styles.title}>Sapé Pharma</Text>
->>>>>>> projetomla
             <Text style={styles.subtitle}>Sistema de Vendas e Controle para Farmácia</Text>
           </View>
 

@@ -22,12 +22,9 @@ const RootLayoutInner = () => {
   const router = useRouter();
   const segments = useSegments();
 
-<<<<<<< HEAD
   const currentSegment = segments[0] ?? '';
   const isLoginRoute = currentSegment === 'login';
 
-=======
->>>>>>> projetomla
   useEffect(() => {
     if (!isLoading) {
       if (user !== null && isLoginRoute) {

@@ -1,26 +1,19 @@
-<<<<<<< HEAD
-import { View, Text, StyleSheet } from 'react-native';
-=======
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useProducts } from '@/hooks/ProductContext';
->>>>>>> projetomla
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 
 export default function TabsScreen() {
   const router = useRouter();
   const { categories, products } = useProducts();
 
   return (
-<<<<<<< HEAD
-    <View style={styles.container}>
-      <Text style={styles.title}>Bem-vindo!</Text>
-      <Text style={styles.subtitle}>Você está autenticado.</Text>
-    </View>
-=======
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Farmácia Control</Text>
-      <Text style={styles.subtitle}>Painel de estoque e cadastro de produtos</Text>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
+      <ScreenHeader
+        title="Farmácia Control"
+        subtitle="Painel de estoque e cadastro de produtos"
+      />
 
       <View style={styles.card}>
         <Text style={styles.cardLabel}>Categorias cadastradas</Text>
@@ -44,41 +37,22 @@ export default function TabsScreen() {
         <Text style={styles.buttonSecondaryText}>Ir para Categorias</Text>
       </TouchableOpacity>
     </ScrollView>
->>>>>>> projetomla
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
-<<<<<<< HEAD
     backgroundColor: '#ffffff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#14838d',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#4d7d7f',
-    textAlign: 'center',
-  },
-});
-=======
-    backgroundColor: '#f5f5f5',
-  },
-  content: {
+  container: {
     padding: 24,
+    backgroundColor: '#f5f5f5',
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#2c5aa0',
+    color: '#14838d',
     marginBottom: 8,
   },
   subtitle: {
@@ -104,11 +78,11 @@ const styles = StyleSheet.create({
   },
   cardValue: {
     fontSize: 36,
-    color: '#1e3a8a',
+    color: '#14838d',
     fontWeight: '700',
   },
   button: {
-    backgroundColor: '#2c5aa0',
+    backgroundColor: '#14838d',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -121,7 +95,7 @@ const styles = StyleSheet.create({
   },
   buttonSecondary: {
     backgroundColor: '#ffffff',
-    borderColor: '#2c5aa0',
+    borderColor: '#14838d',
     borderWidth: 1,
     paddingVertical: 16,
     borderRadius: 12,
@@ -129,9 +103,9 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   buttonSecondaryText: {
-    color: '#2c5aa0',
+    color: '#14838d',
     fontSize: 16,
     fontWeight: '600',
   },
 });
->>>>>>> projetomla
+

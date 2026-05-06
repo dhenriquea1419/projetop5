@@ -47,23 +47,20 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-<<<<<<< HEAD
-    // Mantemos o comportamento igual em todas as plataformas:
-    // o app inicia sempre na tela de login até o usuário efetuar login.
-=======
+    // Mantemos o comportamento igual em todas as plataformas,
+    // mas restauramos o usuário quando houver sessão salva.
     const storageAvailable = typeof localStorage !== 'undefined';
     const storedUser = storageAvailable ? localStorage.getItem('user') : null;
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser) as User;
         setUser(parsedUser);
-      } catch (e) {
+      } catch {
         if (storageAvailable) {
           localStorage.removeItem('user');
         }
       }
     }
->>>>>>> projetomla
     setIsLoading(false);
   }, []);
 
@@ -81,12 +78,9 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         role: foundUser.role,
       };
       setUser(userToSet);
-<<<<<<< HEAD
-=======
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem('user', JSON.stringify(userToSet));
       }
->>>>>>> projetomla
       console.log('user updated:', userToSet);
       return true;
     } else {
@@ -98,6 +92,9 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const signOut = () => {
     setUser(null);
     setError(null);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('user');
+    }
   };
 
   return (
