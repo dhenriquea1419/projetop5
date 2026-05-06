@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useRouter, useSegments, Slot } from 'expo-router';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { AuthContextProvider, useAuth } from '../hooks/AuthContext';
+import { ProductContextProvider } from '../hooks/ProductContext';
+import { PharmacyContextProvider } from '../hooks/PharmacyContext';
 
 const styles = StyleSheet.create({
   container: {
@@ -21,12 +23,6 @@ const RootLayoutInner = () => {
   const segments = useSegments();
 
   useEffect(() => {
-    console.log('Debug:', {
-      isLoading,
-      user: !!user,
-      segments,
-    });
-
     if (!isLoading) {
       if (user !== null && segments[0] !== '(tabs)') {
         router.replace('/(tabs)');
@@ -51,7 +47,11 @@ const RootLayoutInner = () => {
 const RootLayout = () => {
   return (
     <AuthContextProvider>
-      <RootLayoutInner />
+      <ProductContextProvider>
+        <PharmacyContextProvider>
+          <RootLayoutInner />
+        </PharmacyContextProvider>
+      </ProductContextProvider>
     </AuthContextProvider>
   );
 };

@@ -47,13 +47,16 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const storageAvailable = typeof localStorage !== 'undefined';
+    const storedUser = storageAvailable ? localStorage.getItem('user') : null;
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser) as User;
         setUser(parsedUser);
       } catch (e) {
-        localStorage.removeItem('user');
+        if (storageAvailable) {
+          localStorage.removeItem('user');
+        }
       }
     }
     setIsLoading(false);
@@ -73,7 +76,9 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         role: foundUser.role,
       };
       setUser(userToSet);
-      localStorage.setItem('user', JSON.stringify(userToSet));
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(userToSet));
+      }
       console.log('user updated:', userToSet);
       return true;
     } else {
