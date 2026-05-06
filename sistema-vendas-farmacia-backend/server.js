@@ -9,10 +9,10 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors()); // Habilita CORS
-app.use(helmet()); // Segurança HTTP headers
-app.use(morgan('combined')); // Logs de requisições
-app.use(express.json()); // Parser de JSON
+app.use(cors()); 
+app.use(helmet()); 
+app.use(morgan('combined')); 
+app.use(express.json()); 
 
 app.get('/', (req, res) => {
   res.json({ mensagem: 'Sistema de Vendas em Farmácia - Backend funcionando perfeitamente!' });

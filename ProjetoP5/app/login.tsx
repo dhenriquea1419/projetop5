@@ -10,9 +10,11 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useAuth } from '../hooks/AuthContext';
 
 export default function LoginScreen() {
+  const router = useRouter();
   const { signIn, isLoading, error } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,7 +27,10 @@ export default function LoginScreen() {
     }
 
     try {
-      await signIn(email, password);
+      const success = await signIn(email, password);
+      if (success) {
+        router.replace('/');
+      }
     } catch (err) {
       // Erro já é exibido pelo alert ou estado
     }
@@ -40,7 +45,7 @@ export default function LoginScreen() {
         <View style={styles.content}>
           {/* Logo/Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>PharmaStock</Text>
+            <Text style={styles.title}>SapéPharma</Text>
             <Text style={styles.subtitle}>Sistema de Vendas e Controle para Farmácia</Text>
           </View>
 

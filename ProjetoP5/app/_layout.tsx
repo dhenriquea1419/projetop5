@@ -20,30 +20,34 @@ const RootLayoutInner = () => {
   const router = useRouter();
   const segments = useSegments();
 
-  useEffect(() => {
-    console.log('Debug:', {
-      isLoading,
-      user: !!user,
-      segments,
-    });
+  const currentSegment = segments[0] ?? '';
+  const isLoginRoute = currentSegment === 'login';
 
+  useEffect(() => {
     if (!isLoading) {
-      if (user !== null && segments[0] !== '(tabs)') {
-        router.replace('/(tabs)');
-      } else if (user === null && segments[0] !== 'login') {
+      if (user !== null && isLoginRoute) {
+        router.replace('/');
+      } else if (user === null && !isLoginRoute) {
         router.replace('/login');
       }
     }
-  }, [isLoading, user, segments, router]);
+  }, [isLoading, user, isLoginRoute, router]);
+
+  const shouldRenderSlot = !isLoading && (user !== null || isLoginRoute);
+
+  if (!shouldRenderSlot) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.overlay}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <Slot />
-      {isLoading && (
-        <View style={styles.overlay}>
-          <ActivityIndicator size="large" color="#0000ff" />
-        </View>
-      )}
     </View>
   );
 };
