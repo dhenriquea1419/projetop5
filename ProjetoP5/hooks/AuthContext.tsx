@@ -46,23 +46,11 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const hasLocalStorage =
-    typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
-
   useEffect(() => {
-    if (hasLocalStorage) {
-      const storedUser = window.localStorage.getItem('user');
-      if (storedUser) {
-        try {
-          const parsedUser = JSON.parse(storedUser) as User;
-          setUser(parsedUser);
-        } catch (e) {
-          window.localStorage.removeItem('user');
-        }
-      }
-    }
+    // Mantemos o comportamento igual em todas as plataformas:
+    // o app inicia sempre na tela de login até o usuário efetuar login.
     setIsLoading(false);
-  }, [hasLocalStorage]);
+  }, []);
 
   const signIn = async (email: string, password: string): Promise<boolean> => {
     console.log('signIn called with:', email);
@@ -78,9 +66,6 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         role: foundUser.role,
       };
       setUser(userToSet);
-      if (hasLocalStorage) {
-        window.localStorage.setItem('user', JSON.stringify(userToSet));
-      }
       console.log('user updated:', userToSet);
       return true;
     } else {
@@ -92,9 +77,6 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const signOut = () => {
     setUser(null);
     setError(null);
-    if (hasLocalStorage) {
-      window.localStorage.removeItem('user');
-    }
   };
 
   return (

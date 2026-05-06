@@ -1,11 +1,26 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/AuthContext';
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const { user, signOut } = useAuth();
 
   const handleLogout = () => {
+    const doSignOut = () => {
+      signOut();
+      router.replace('/login');
+    };
+
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm('Tem certeza que deseja sair da aplicação?');
+      if (confirmed) {
+        doSignOut();
+      }
+      return;
+    }
+
     Alert.alert('Sair', 'Tem certeza que deseja sair da aplicação?', [
       {
         text: 'Cancelar',
@@ -14,9 +29,7 @@ export default function ProfileScreen() {
       },
       {
         text: 'Sair',
-        onPress: () => {
-          signOut();
-        },
+        onPress: doSignOut,
         style: 'destructive',
       },
     ]);
