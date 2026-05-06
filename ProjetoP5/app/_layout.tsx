@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useRouter, useSegments, Slot } from 'expo-router';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { AuthContextProvider, useAuth } from '../hooks/AuthContext';
+import { ProductContextProvider } from '../hooks/ProductContext';
+import { PharmacyContextProvider } from '../hooks/PharmacyContext';
 
 const styles = StyleSheet.create({
   container: {
@@ -20,9 +22,12 @@ const RootLayoutInner = () => {
   const router = useRouter();
   const segments = useSegments();
 
+<<<<<<< HEAD
   const currentSegment = segments[0] ?? '';
   const isLoginRoute = currentSegment === 'login';
 
+=======
+>>>>>>> projetomla
   useEffect(() => {
     if (!isLoading) {
       if (user !== null && isLoginRoute) {
@@ -55,7 +60,11 @@ const RootLayoutInner = () => {
 const RootLayout = () => {
   return (
     <AuthContextProvider>
-      <RootLayoutInner />
+      <ProductContextProvider>
+        <PharmacyContextProvider>
+          <RootLayoutInner />
+        </PharmacyContextProvider>
+      </ProductContextProvider>
     </AuthContextProvider>
   );
 };
