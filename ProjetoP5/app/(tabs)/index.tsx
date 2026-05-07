@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useProducts } from '@/hooks/ProductContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { StandardButton } from '@/components/ui/StandardButton';
+import { StandardFooter } from '@/components/ui/StandardFooter';
 
 export default function TabsScreen() {
   const router = useRouter();
@@ -24,18 +26,18 @@ export default function TabsScreen() {
         <Text style={styles.cardValue}>{products.length}</Text>
       </View>
 
-      <TouchableOpacity
-        style={styles.button}
+      <StandardButton
+        text="Ir para Produtos"
         onPress={() => router.push({ pathname: '/(tabs)/products' })}
-      >
-        <Text style={styles.buttonText}>Ir para Produtos</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.buttonSecondary}
+        variant="primary"
+      />
+      <StandardButton
+        text="Ir para Categorias"
         onPress={() => router.push({ pathname: '/(tabs)/categories' } as any)}
-      >
-        <Text style={styles.buttonSecondaryText}>Ir para Categorias</Text>
-      </TouchableOpacity>
+        variant="secondary"
+      />
+
+      <StandardFooter />
     </ScrollView>
   );
 }
@@ -46,8 +48,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   container: {
-    padding: 24,
-    backgroundColor: '#f5f5f5',
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    backgroundColor: '#ffffff',
   },
   title: {
     fontSize: 28,
@@ -64,7 +67,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 14,
     padding: 18,
+    marginHorizontal: 0,
     marginBottom: 16,
+    marginTop: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -80,32 +85,6 @@ const styles = StyleSheet.create({
     fontSize: 36,
     color: '#14838d',
     fontWeight: '700',
-  },
-  button: {
-    backgroundColor: '#14838d',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  buttonSecondary: {
-    backgroundColor: '#ffffff',
-    borderColor: '#14838d',
-    borderWidth: 1,
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  buttonSecondaryText: {
-    color: '#14838d',
-    fontSize: 16,
-    fontWeight: '600',
   },
 });
 

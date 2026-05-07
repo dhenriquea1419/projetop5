@@ -1,7 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/AuthContext';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { StandardButton } from '@/components/ui/StandardButton';
+import { StandardFooter } from '@/components/ui/StandardFooter';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -37,6 +40,12 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView style={styles.container}>
+      <ScreenHeader
+        title="Perfil"
+        subtitle="Informações da sua conta"
+        icon="👤"
+      />
+
       <View style={styles.header}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>
@@ -87,14 +96,13 @@ export default function ProfileScreen() {
         )}
       </View>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Sair da Conta</Text>
-      </TouchableOpacity>
+      <StandardButton
+        text="Sair da Conta"
+        onPress={handleLogout}
+        variant="danger"
+      />
 
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Farmácia Control v1.0.0</Text>
-        <Text style={styles.footerText}>© 2024 - Todos os direitos reservados</Text>
-      </View>
+      <StandardFooter />
     </ScrollView>
   );
 }

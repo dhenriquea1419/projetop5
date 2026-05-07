@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, FlatList } from 'react-native';
 import { usePharmacy } from '@/hooks/PharmacyContext';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { StandardButton } from '@/components/ui/StandardButton';
+import { StandardFooter } from '@/components/ui/StandardFooter';
 
 export default function ProgressCardsScreen() {
   const {
@@ -64,10 +67,11 @@ export default function ProgressCardsScreen() {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Cartões de Progressão</Text>
-      <Text style={styles.description}>
-        Gerencie cartões de progressão funcional dos vendedores.
-      </Text>
+      <ScreenHeader
+        title="Cartões de Progressão"
+        subtitle="Gerencie cartões dos vendedores"
+        icon="⭐"
+      />
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>
@@ -138,11 +142,11 @@ export default function ProgressCardsScreen() {
         )}
 
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.button} onPress={handleAddOrUpdateCard}>
-            <Text style={styles.buttonText}>
-              {editingCard ? 'Atualizar cartão' : 'Salvar cartão'}
-            </Text>
-          </TouchableOpacity>
+          <StandardButton
+            text={editingCard ? 'Atualizar cartão' : 'Salvar cartão'}
+            onPress={handleAddOrUpdateCard}
+            variant="primary"
+          />
           {editingCard && (
             <TouchableOpacity style={styles.cancelButton} onPress={handleCancelEdit}>
               <Text style={styles.cancelButtonText}>Cancelar</Text>
@@ -189,11 +193,12 @@ export default function ProgressCardsScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#ffffff',
   },
   container: {
-    padding: 20,
-    paddingBottom: 40,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    backgroundColor: '#ffffff',
   },
   title: {
     fontSize: 28,
@@ -210,7 +215,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 16,
     padding: 18,
+    marginHorizontal: 0,
     marginBottom: 20,
+    marginTop: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,

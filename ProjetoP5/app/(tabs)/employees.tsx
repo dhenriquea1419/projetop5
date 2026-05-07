@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, FlatList } from 'react-native';
 import { usePharmacy } from '@/hooks/PharmacyContext';
 import { useProducts } from '@/hooks/ProductContext';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { StandardButton } from '@/components/ui/StandardButton';
+import { StandardFooter } from '@/components/ui/StandardFooter';
 
 export default function EmployeesScreen() {
   const {
@@ -122,10 +125,11 @@ export default function EmployeesScreen() {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Funcionários</Text>
-      <Text style={styles.description}>
-        Cadastre representantes e vendedores com suas informações específicas.
-      </Text>
+      <ScreenHeader
+        title="Funcionários"
+        subtitle="Cadastre representantes e vendedores"
+        icon="👔"
+      />
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Novo funcionário</Text>
@@ -287,9 +291,11 @@ export default function EmployeesScreen() {
           </>
         )}
 
-        <TouchableOpacity style={styles.button} onPress={handleAddEmployee}>
-          <Text style={styles.buttonText}>Salvar funcionário</Text>
-        </TouchableOpacity>
+        <StandardButton
+          text="Salvar funcionário"
+          onPress={handleAddEmployee}
+          variant="primary"
+        />
       </View>
 
       <View style={styles.section}>
@@ -337,11 +343,12 @@ export default function EmployeesScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#ffffff',
   },
   container: {
-    padding: 20,
-    paddingBottom: 40,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    backgroundColor: '#ffffff',
   },
   title: {
     fontSize: 28,
@@ -358,7 +365,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 16,
     padding: 18,
+    marginHorizontal: 0,
     marginBottom: 20,
+    marginTop: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,

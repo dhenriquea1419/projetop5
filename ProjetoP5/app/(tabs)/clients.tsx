@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, FlatList } from 'react-native';
 import { usePharmacy } from '@/hooks/PharmacyContext';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { StandardButton } from '@/components/ui/StandardButton';
+import { StandardFooter } from '@/components/ui/StandardFooter';
 
 export default function ClientsScreen() {
   const {
@@ -63,10 +66,11 @@ export default function ClientsScreen() {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Clientes</Text>
-      <Text style={styles.description}>
-        Cadastre clientes e seus dependentes.
-      </Text>
+      <ScreenHeader
+        title="Clientes"
+        subtitle="Cadastre clientes e seus dependentes"
+        icon="👥"
+      />
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Novo cliente</Text>
@@ -110,9 +114,11 @@ export default function ClientsScreen() {
           placeholder="Ex: Professor"
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleAddClient}>
-          <Text style={styles.buttonText}>Salvar cliente</Text>
-        </TouchableOpacity>
+        <StandardButton
+          text="Salvar cliente"
+          onPress={handleAddClient}
+          variant="primary"
+        />
       </View>
 
       <View style={styles.section}>
@@ -168,9 +174,11 @@ export default function ClientsScreen() {
           placeholder="Ex: Filha"
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleAddDependent}>
-          <Text style={styles.buttonText}>Salvar dependente</Text>
-        </TouchableOpacity>
+        <StandardButton
+          text="Salvar dependente"
+          onPress={handleAddDependent}
+          variant="primary"
+        />
       </View>
 
       <View style={styles.section}>
@@ -214,11 +222,12 @@ export default function ClientsScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#ffffff',
   },
   container: {
-    padding: 20,
-    paddingBottom: 40,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    backgroundColor: '#ffffff',
   },
   title: {
     fontSize: 28,
@@ -235,7 +244,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 16,
     padding: 18,
+    marginHorizontal: 0,
     marginBottom: 20,
+    marginTop: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
