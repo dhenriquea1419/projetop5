@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { usePharmacy } from '@/hooks/PharmacyContext';
 
 export default function ProgressCardsScreen() {
@@ -62,8 +62,28 @@ export default function ProgressCardsScreen() {
     setVendedorId('');
   };
 
-  return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
+  const renderCard = ({ item }: { item: any }) => {
+    const seller = findEmployeeById(item.vendedorId);
+    return (
+      <View style={styles.cardItem}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardCode}>{item.codigo}</Text>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => handleEditCard(item)}
+          >
+            <Text style={styles.editButtonText}>Editar</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.cardInfo}>Categoria: {item.categoria}</Text>
+        <Text style={styles.cardInfo}>Última progressão: {item.dataUltimaProgressao}</Text>
+        <Text style={styles.cardInfo}>Vendedor: {seller?.nome || 'Não encontrado'}</Text>
+      </View>
+    );
+  };
+
+  const ListHeader = () => (
+    <>
       <Text style={styles.title}>Cartões de Progressão</Text>
       <Text style={styles.description}>
         Gerencie cartões de progressão funcional dos vendedores.
@@ -153,44 +173,26 @@ export default function ProgressCardsScreen() {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Cartões cadastrados</Text>
-        {progressCards.length === 0 ? (
+        {progressCards.length === 0 && (
           <Text style={styles.emptyText}>Nenhum cartão cadastrado.</Text>
-        ) : (
-          <FlatList
-            data={progressCards}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => {
-              const seller = findEmployeeById(item.vendedorId);
-              return (
-                <View style={styles.cardItem}>
-                  <View style={styles.cardHeader}>
-                    <Text style={styles.cardCode}>{item.codigo}</Text>
-                    <TouchableOpacity
-                      style={styles.editButton}
-                      onPress={() => handleEditCard(item)}
-                    >
-                      <Text style={styles.editButtonText}>Editar</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <Text style={styles.cardInfo}>Categoria: {item.categoria}</Text>
-                  <Text style={styles.cardInfo}>Última progressão: {item.dataUltimaProgressao}</Text>
-                  <Text style={styles.cardInfo}>Vendedor: {seller?.nome || 'Não encontrado'}</Text>
-                </View>
-              );
-            }}
-            contentContainerStyle={styles.list}
-          />
         )}
       </View>
-    </ScrollView>
+    </>
+  );
+
+  return (
+    <FlatList
+      data={progressCards}
+      keyExtractor={(item) => item.id}
+      renderItem={renderCard}
+      ListHeaderComponent={ListHeader}
+      contentContainerStyle={styles.container}
+      showsVerticalScrollIndicator={false}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
   container: {
     padding: 20,
     paddingBottom: 40,

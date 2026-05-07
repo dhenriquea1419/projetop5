@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { useProducts } from '@/hooks/ProductContext';
 
 export default function CategoriesScreen() {
@@ -23,53 +23,55 @@ export default function CategoriesScreen() {
   };
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Categorias</Text>
-      <Text style={styles.description}>Registre as categorias da farmácia e associe produtos a elas.</Text>
+    <FlatList
+      data={categories}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <View style={styles.categoryCard}>
+          <Text style={styles.categoryCode}>{item.codigo}</Text>
+          <Text style={styles.categoryDescription}>{item.descricao}</Text>
+        </View>
+      )}
+      ListHeaderComponent={() => (
+        <>
+          <Text style={styles.title}>Categorias</Text>
+          <Text style={styles.description}>Registre as categorias da farmácia e associe produtos a elas.</Text>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Nova categoria</Text>
-        <Text style={styles.label}>Código</Text>
-        <TextInput
-          value={codigo}
-          onChangeText={setCodigo}
-          style={styles.input}
-          placeholder="Ex: MED"
-          autoCapitalize="characters"
-        />
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Nova categoria</Text>
+            <Text style={styles.label}>Código</Text>
+            <TextInput
+              value={codigo}
+              onChangeText={setCodigo}
+              style={styles.input}
+              placeholder="Ex: MED"
+              autoCapitalize="characters"
+            />
 
-        <Text style={styles.label}>Descrição</Text>
-        <TextInput
-          value={descricao}
-          onChangeText={setDescricao}
-          style={styles.input}
-          placeholder="Ex: Medicamentos"
-        />
+            <Text style={styles.label}>Descrição</Text>
+            <TextInput
+              value={descricao}
+              onChangeText={setDescricao}
+              style={styles.input}
+              placeholder="Ex: Medicamentos"
+            />
 
-        <TouchableOpacity style={styles.button} onPress={handleAddCategory}>
-          <Text style={styles.buttonText}>Salvar categoria</Text>
-        </TouchableOpacity>
-      </View>
+            <TouchableOpacity style={styles.button} onPress={handleAddCategory}>
+              <Text style={styles.buttonText}>Salvar categoria</Text>
+            </TouchableOpacity>
+          </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Categorias cadastradas</Text>
-        {categories.length === 0 ? (
-          <Text style={styles.emptyText}>Nenhuma categoria cadastrada.</Text>
-        ) : (
-          <FlatList
-            data={categories}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <View style={styles.categoryCard}>
-                <Text style={styles.categoryCode}>{item.codigo}</Text>
-                <Text style={styles.categoryDescription}>{item.descricao}</Text>
-              </View>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Categorias cadastradas</Text>
+            {categories.length === 0 && (
+              <Text style={styles.emptyText}>Nenhuma categoria cadastrada.</Text>
             )}
-            contentContainerStyle={styles.list}
-          />
-        )}
-      </View>
-    </ScrollView>
+          </View>
+        </>
+      )}
+      contentContainerStyle={styles.container}
+      showsVerticalScrollIndicator={false}
+    />
   );
 }
 

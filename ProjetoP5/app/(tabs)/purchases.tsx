@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { usePharmacy } from '@/hooks/PharmacyContext';
 import { useProducts } from '@/hooks/ProductContext';
 
@@ -76,8 +76,31 @@ export default function PurchasesScreen() {
     setItens([]);
   };
 
-  return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
+  const renderPurchase = ({ item }: { item: any }) => {
+    const client = findClientById(item.clienteId);
+    const seller = findEmployeeById(item.vendedorId);
+    return (
+      <View style={styles.purchaseCard}>
+        <View style={styles.purchaseHeader}>
+          <Text style={styles.purchaseNumber}>{item.numeroCompra}</Text>
+          <Text style={styles.purchaseDate}>{item.dataCompra}</Text>
+        </View>
+        <Text style={styles.purchaseInfo}>Cliente: {client?.nome || 'Não encontrado'}</Text>
+        <Text style={styles.purchaseInfo}>Vendedor: {seller?.nome || 'Não encontrado'}</Text>
+        <View style={styles.itemsList}>
+          <Text style={styles.sectionSubtitle}>Itens</Text>
+          {item.itens.map((purchaseItem: any) => (
+            <Text key={purchaseItem.produtoId} style={styles.itemText}>
+              • {getProductLabel(purchaseItem.produtoId)} — {purchaseItem.quantidade}
+            </Text>
+          ))}
+        </View>
+      </View>
+    );
+  };
+
+  const ListHeader = () => (
+    <>
       <Text style={styles.title}>Compras</Text>
       <Text style={styles.description}>
         Registre compras realizadas pelos clientes com vendedores.
@@ -216,47 +239,26 @@ export default function PurchasesScreen() {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Compras registradas</Text>
-        {purchases.length === 0 ? (
+        {purchases.length === 0 && (
           <Text style={styles.emptyText}>Nenhuma compra registrada.</Text>
-        ) : (
-          <FlatList
-            data={purchases}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => {
-              const client = findClientById(item.clienteId);
-              const seller = findEmployeeById(item.vendedorId);
-              return (
-                <View style={styles.purchaseCard}>
-                  <View style={styles.purchaseHeader}>
-                    <Text style={styles.purchaseNumber}>{item.numeroCompra}</Text>
-                    <Text style={styles.purchaseDate}>{item.dataCompra}</Text>
-                  </View>
-                  <Text style={styles.purchaseInfo}>Cliente: {client?.nome || 'Não encontrado'}</Text>
-                  <Text style={styles.purchaseInfo}>Vendedor: {seller?.nome || 'Não encontrado'}</Text>
-                  <View style={styles.itemsList}>
-                    <Text style={styles.sectionSubtitle}>Itens</Text>
-                    {item.itens.map((purchaseItem) => (
-                      <Text key={purchaseItem.produtoId} style={styles.itemText}>
-                        • {getProductLabel(purchaseItem.produtoId)} — {purchaseItem.quantidade}
-                      </Text>
-                    ))}
-                  </View>
-                </View>
-              );
-            }}
-            contentContainerStyle={styles.list}
-          />
         )}
       </View>
-    </ScrollView>
+    </>
+  );
+
+  return (
+    <FlatList
+      data={purchases}
+      keyExtractor={(item) => item.id}
+      renderItem={renderPurchase}
+      ListHeaderComponent={ListHeader}
+      contentContainerStyle={styles.container}
+      showsVerticalScrollIndicator={false}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
   container: {
     padding: 20,
     paddingBottom: 40,

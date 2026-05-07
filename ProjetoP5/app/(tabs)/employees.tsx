@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { usePharmacy } from '@/hooks/PharmacyContext';
 import { useProducts } from '@/hooks/ProductContext';
 
@@ -13,6 +13,8 @@ export default function EmployeesScreen() {
     addProgressCard,
   } = usePharmacy();
   const { categories } = useProducts();
+
+  const allEmployees = [...representatives, ...sellers];
 
   const [tipo, setTipo] = useState<'representante' | 'vendedor'>('vendedor');
   const [matricula, setMatricula] = useState('');
@@ -120,8 +122,35 @@ export default function EmployeesScreen() {
     );
   };
 
-  return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
+  const renderEmployee = ({ item }: { item: any }) => {
+    const isRep = item.tipo === 'representante';
+    const card = isRep ? null : progressCards.find((c) => c.id === (item as any).cartaoProgressaoId);
+    return (
+      <View style={styles.employeeCard}>
+        <Text style={styles.employeeName}>{item.nome}</Text>
+        <Text style={styles.employeeInfo}>Matrícula: {item.matricula}</Text>
+        <Text style={styles.employeeInfo}>CPF: {item.cpf}</Text>
+        <Text style={styles.employeeInfo}>Salário: R$ {item.salario.toFixed(2)}</Text>
+        <Text style={styles.employeeInfo}>Tipo: {isRep ? 'Representante' : 'Vendedor'}</Text>
+        {isRep ? (
+          <>
+            <Text style={styles.employeeInfo}>Contrato: {(item as any).dataInicioContrato} a {(item as any).dataFimContrato}</Text>
+            <Text style={styles.employeeInfo}>Categorias: {(item as any).categoriasResponsaveis.map((id: string) => categories.find(c => c.id === id)?.codigo).join(', ')}</Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.employeeInfo}>Comissão: {(item as any).percentualComissao}%</Text>
+            {card && (
+              <Text style={styles.employeeInfo}>Cartão: {card.codigo} - {card.categoria} (última: {card.dataUltimaProgressao})</Text>
+            )}
+          </>
+        )}
+      </View>
+    );
+  };
+
+  const ListHeader = () => (
+    <>
       <Text style={styles.title}>Funcionários</Text>
       <Text style={styles.description}>
         Cadastre representantes e vendedores com suas informações específicas.
@@ -294,51 +323,26 @@ export default function EmployeesScreen() {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Funcionários cadastrados</Text>
-        {representatives.length === 0 && sellers.length === 0 ? (
+        {allEmployees.length === 0 && (
           <Text style={styles.emptyText}>Nenhum funcionário cadastrado.</Text>
-        ) : (
-          <FlatList
-            data={[...representatives, ...sellers]}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => {
-              const isRep = item.tipo === 'representante';
-              const card = isRep ? null : progressCards.find((c) => c.id === (item as any).cartaoProgressaoId);
-              return (
-                <View style={styles.employeeCard}>
-                  <Text style={styles.employeeName}>{item.nome}</Text>
-                  <Text style={styles.employeeInfo}>Matrícula: {item.matricula}</Text>
-                  <Text style={styles.employeeInfo}>CPF: {item.cpf}</Text>
-                  <Text style={styles.employeeInfo}>Salário: R$ {item.salario.toFixed(2)}</Text>
-                  <Text style={styles.employeeInfo}>Tipo: {isRep ? 'Representante' : 'Vendedor'}</Text>
-                  {isRep ? (
-                    <>
-                      <Text style={styles.employeeInfo}>Contrato: {(item as any).dataInicioContrato} a {(item as any).dataFimContrato}</Text>
-                      <Text style={styles.employeeInfo}>Categorias: {(item as any).categoriasResponsaveis.map((id: string) => categories.find(c => c.id === id)?.codigo).join(', ')}</Text>
-                    </>
-                  ) : (
-                    <>
-                      <Text style={styles.employeeInfo}>Comissão: {(item as any).percentualComissao}%</Text>
-                      {card && (
-                        <Text style={styles.employeeInfo}>Cartão: {card.codigo} - {card.categoria} (última: {card.dataUltimaProgressao})</Text>
-                      )}
-                    </>
-                  )}
-                </View>
-              );
-            }}
-            contentContainerStyle={styles.list}
-          />
         )}
       </View>
-    </ScrollView>
+    </>
+  );
+
+  return (
+    <FlatList
+      data={allEmployees}
+      keyExtractor={(item) => item.id}
+      renderItem={renderEmployee}
+      ListHeaderComponent={ListHeader}
+      contentContainerStyle={styles.container}
+      showsVerticalScrollIndicator={false}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
   container: {
     padding: 20,
     paddingBottom: 40,
