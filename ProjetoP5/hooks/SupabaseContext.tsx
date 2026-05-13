@@ -1,14 +1,19 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
-// Configuração do Supabase
-const SUPABASE_URL = 'https://seu-projeto.supabase.co'; // Substitua pela sua URL
-const SUPABASE_ANON_KEY = 'sua-chave-anonima'; // Substitua pela sua chave
+const supabaseUrl = Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_ANON_KEY
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// Configuração da API local
-const API_URL = 'http://localhost:3000/api'; // Altere conforme necessário
+const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: AsyncStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+})
 
 interface User {
   id: string;
@@ -21,9 +26,7 @@ interface SupabaseContextType {
   user: User | null;
   isLoading: boolean;
   error: string | null;
-  token: string | null;
-  supabase: ReturnType<typeof createClient>;
-  apiCall: (method: string, endpoint: string, data?: any) => Promise<any>;
+  supabase: SupabaseClient;
   signup: (email: string, password: string, name: string, role?: string) => Promise<boolean>;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
@@ -35,126 +38,104 @@ export const SupabaseContextProvider: React.FC<{ children: ReactNode }> = ({ chi
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
 
-  // Verificar se há sessão ativa ao iniciar
   useEffect(() => {
-    checkSession();
-  }, []);
+    checkSession()
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          const userData: User = {
+            id: session.user.id,
+            email: session.user.email ?? '',
+            name: session.user.user_metadata?.name ?? '',
+            role: session.user.user_metadata?.role ?? 'vendedor',
+          }
+          setUser(userData)
+        } else {
+          setUser(null)
+        }
+        setIsLoading(false)
+      }
+    )
+
+    return () => {
+      authListener?.subscription.unsubscribe()
+    }
+  }, [])
 
   const checkSession = async () => {
     try {
-      setIsLoading(true);
-      const { data, error } = await supabase.auth.getSession();
+      setIsLoading(true)
+      const { data } = await supabase.auth.getSession()
 
-      if (error) throw error;
-
-      if (data?.session) {
-        // Aqui você poderia buscar os dados adicionais do usuário da sua API
-        // const response = await fetch(`${API_URL}/auth/me`, {
-        //   headers: { Authorization: `Bearer ${data.session.access_token}` },
-        // });
-        // const userData = await response.json();
-        // setUser(userData);
-        setToken(data.session.access_token);
+      if (data?.session?.user) {
+        const userData: User = {
+          id: data.session.user.id,
+          email: data.session.user.email ?? '',
+          name: data.session.user.user_metadata?.name ?? '',
+          role: data.session.user.user_metadata?.role ?? 'vendedor',
+        }
+        setUser(userData)
       }
     } catch (err) {
-      console.error('Erro ao verificar sessão:', err);
+      console.error('Erro ao verificar sessão:', err)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
-
-  // Função para fazer chamadas à API com autenticação
-  const apiCall = async (method: string, endpoint: string, data?: any) => {
-    try {
-      const headers: any = {
-        'Content-Type': 'application/json',
-      };
-
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      const options: any = {
-        method,
-        headers,
-      };
-
-      if (data) {
-        options.body = JSON.stringify(data);
-      }
-
-      const response = await fetch(`${API_URL}${endpoint}`, options);
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Erro ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (err: any) {
-      setError(err.message);
-      throw err;
-    }
-  };
+  }
 
   const signup = async (email: string, password: string, name: string, role: string = 'vendedor') => {
     try {
-      setError(null);
-      setIsLoading(true);
+      setError(null)
+      setIsLoading(true)
 
-      const response = await apiCall('POST', '/auth/signup', {
+      const { error } = await supabase.auth.signUp({
         email,
         password,
-        name,
-        role,
-      });
+        options: { data: { name, role } },
+      })
 
-      setUser(response.user);
-      return true;
+      if (error) throw error
+      return true
     } catch (err: any) {
-      setError(err.message);
-      return false;
+      setError(err.message)
+      return false
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const login = async (email: string, password: string) => {
     try {
-      setError(null);
-      setIsLoading(true);
+      setError(null)
+      setIsLoading(true)
 
-      const response = await apiCall('POST', '/auth/login', {
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
-      });
+      })
 
-      setUser(response.user);
-      setToken(response.token);
-      return true;
+      if (error) throw error
+      return true
     } catch (err: any) {
-      setError(err.message);
-      return false;
+      setError(err.message)
+      return false
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const logout = async () => {
     try {
-      setIsLoading(true);
-      await apiCall('POST', '/auth/logout');
-      setUser(null);
-      setToken(null);
-      await supabase.auth.signOut();
+      setIsLoading(true)
+      await supabase.auth.signOut()
+      setUser(null)
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <SupabaseContext.Provider
@@ -162,9 +143,7 @@ export const SupabaseContextProvider: React.FC<{ children: ReactNode }> = ({ chi
         user,
         isLoading,
         error,
-        token,
         supabase,
-        apiCall,
         signup,
         login,
         logout,
@@ -172,13 +151,13 @@ export const SupabaseContextProvider: React.FC<{ children: ReactNode }> = ({ chi
     >
       {children}
     </SupabaseContext.Provider>
-  );
-};
+  )
+}
 
 export const useSupabase = () => {
-  const context = useContext(SupabaseContext);
+  const context = useContext(SupabaseContext)
   if (context === undefined) {
-    throw new Error('useSupabase deve ser usado dentro de SupabaseContextProvider');
+    throw new Error('useSupabase deve ser usado dentro de SupabaseContextProvider')
   }
-  return context;
-};
+  return context
+}
