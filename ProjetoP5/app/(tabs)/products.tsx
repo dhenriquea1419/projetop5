@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,16 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
+import { useProducts } from '../../hooks/useApi';
 
 type Product = {
   id: string;
   name: string;
+  price?: number;
+  stock?: number;
+  description?: string;
 };
 
 const ScreenHeader: React.FC<{ title: string }> = ({ title }) => (
@@ -22,25 +27,76 @@ const ScreenHeader: React.FC<{ title: string }> = ({ title }) => (
 );
 
 const ProductsScreen: React.FC = () => {
+  const productsApi = useProducts();
   const [products, setProducts] = useState<Product[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [newProductName, setNewProductName] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Carregar produtos da API ao iniciar
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  const loadProducts = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await productsApi.getAll();
+      setProducts(data || []);
+    } catch (err: any) {
+      // Se erro, usar dados locais vazios
+      console.log('Usando modo local - API não disponível');
+      setProducts([]);
+      setError(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleAddComponent = useCallback(() => {
     setShowForm(true);
   }, []);
 
-  const handleCreateProduct = useCallback(() => {
+  const handleCreateProduct = useCallback(async () => {
     if (newProductName.trim()) {
-      setProducts((prev) => [
-        {
-          id: Math.random().toString(36).substr(2, 9),
+      try {
+        // Tentar criar na API
+        const newProduct = await productsApi.create({
           name: newProductName.trim(),
-        },
-        ...prev,
-      ]);
-      setNewProductName('');
-      setShowForm(false);
+          price: 0,
+          stock: 0,
+          category_id: 'default', // Placeholder
+        });
+
+        if (newProduct && newProduct.id) {
+          setProducts((prev) => [newProduct, ...prev]);
+        } else {
+          // Fallback para modo local
+          setProducts((prev) => [
+            {
+              id: Math.random().toString(36).substr(2, 9),
+              name: newProductName.trim(),
+            },
+            ...prev,
+          ]);
+        }
+
+        setNewProductName('');
+        setShowForm(false);
+      } catch (err) {
+        // Criar localmente se API falhar
+        setProducts((prev) => [
+          {
+            id: Math.random().toString(36).substr(2, 9),
+            name: newProductName.trim(),
+          },
+          ...prev,
+        ]);
+        setNewProductName('');
+        setShowForm(false);
+      }
     }
   }, [newProductName]);
 
@@ -52,7 +108,15 @@ const ProductsScreen: React.FC = () => {
   const renderItem = useCallback(
     ({ item }: { item: Product }) => (
       <View style={styles.productItem}>
-        <Text style={styles.productText}>{item.name}</Text>
+        <View style={styles.productInfo}>
+          <Text style={styles.productText}>{item.name}</Text>
+          {item.price !== undefined && (
+            <Text style={styles.productPrice}>R$ {item.price.toFixed(2)}</Text>
+          )}
+          {item.stock !== undefined && (
+            <Text style={styles.productStock}>Estoque: {item.stock}</Text>
+          )}
+        </View>
       </View>
     ),
     []
@@ -98,9 +162,17 @@ const ProductsScreen: React.FC = () => {
           </View>
         </View>
       )}
-      <Text style={styles.sectionTitle}>Produtos cadastrados</Text>
+      <View style={styles.headerFooter}>
+        <Text style={styles.sectionTitle}>Produtos cadastrados</Text>
+        {isLoading && <ActivityIndicator size="small" color="#6200EE" />}
+        {!isLoading && products.length > 0 && (
+          <TouchableOpacity onPress={loadProducts} style={styles.refreshButton}>
+            <Text style={styles.refreshButtonText}>↻ Recarregar</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
-  ), [showForm, newProductName, handleAddComponent, handleCreateProduct, handleCancel]);
+  ), [showForm, newProductName, handleAddComponent, handleCreateProduct, handleCancel, isLoading, products.length]);
 
   return (
     <KeyboardAvoidingView
@@ -249,6 +321,36 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#333',
     fontWeight: '500',
+  },
+  productInfo: {
+    gap: 4,
+  },
+  productPrice: {
+    fontSize: 14,
+    color: '#6200EE',
+    fontWeight: '600',
+  },
+  productStock: {
+    fontSize: 12,
+    color: '#666',
+  },
+  headerFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: 16,
+    marginVertical: 12,
+  },
+  refreshButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 6,
+  },
+  refreshButtonText: {
+    fontSize: 12,
+    color: '#6200EE',
+    fontWeight: '600',
   },
   emptyContainer: {
     flex: 1,

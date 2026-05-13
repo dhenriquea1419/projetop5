@@ -12,13 +12,19 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../hooks/AuthContext';
+import { useSupabase } from '../hooks/SupabaseContext';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { signIn, isLoading, error } = useAuth();
+  const { signIn, isLoading: authLoading, error: authError } = useAuth();
+  const { login: supabaseLogin, isLoading: supabaseLoading, error: supabaseError } = useSupabase();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [useSupabaseBackend, setUseSupabaseBackend] = useState(false);
+
+  const isLoading = authLoading || supabaseLoading;
+  const error = useSupabaseBackend ? supabaseError : authError;
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -27,12 +33,21 @@ export default function LoginScreen() {
     }
 
     try {
-      const success = await signIn(email, password);
-      if (success) {
-        router.replace('/');
+      if (useSupabaseBackend) {
+        // Tentar com Supabase
+        const success = await supabaseLogin(email, password);
+        if (success) {
+          router.replace('/');
+        }
+      } else {
+        // Usar contexto de autenticação local
+        const success = await signIn(email, password);
+        if (success) {
+          router.replace('/');
+        }
       }
     } catch {
-      // Erro já é exibido pelo alert ou estado
+      // Erro já é exibido pelo estado
     }
   };
 
@@ -95,6 +110,19 @@ export default function LoginScreen() {
 
             {/* Error Message */}
             {error && <Text style={styles.errorText}>{error}</Text>}
+
+            {/* Supabase Backend Toggle */}
+            <View style={styles.toggleContainer}>
+              <Text style={styles.toggleLabel}>Backend:</Text>
+              <TouchableOpacity
+                style={[styles.toggleButton, useSupabaseBackend && styles.toggleButtonActive]}
+                onPress={() => setUseSupabaseBackend(!useSupabaseBackend)}
+              >
+                <Text style={styles.toggleText}>
+                  {useSupabaseBackend ? 'Supabase 🌐' : 'Local 📱'}
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             {/* Login Button */}
             <TouchableOpacity
@@ -273,5 +301,34 @@ const styles = StyleSheet.create({
     color: '#424242',
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     marginTop: 2,
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    paddingHorizontal: 8,
+  },
+  toggleLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#0f4f55',
+  },
+  toggleButton: {
+    backgroundColor: '#e8f6f7',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: '#d6e7e9',
+  },
+  toggleButtonActive: {
+    backgroundColor: '#14838d',
+    borderColor: '#14838d',
+  },
+  toggleText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#0f4f55',
   },
 });

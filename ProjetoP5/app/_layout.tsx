@@ -4,6 +4,7 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { AuthContextProvider, useAuth } from '../hooks/AuthContext';
 import { ProductContextProvider } from '../hooks/ProductContext';
 import { PharmacyContextProvider } from '../hooks/PharmacyContext';
+import { SupabaseContextProvider } from '../hooks/SupabaseContext';
 
 const styles = StyleSheet.create({
   container: {
@@ -56,13 +57,15 @@ const RootLayoutInner = () => {
 
 const RootLayout = () => {
   return (
-    <AuthContextProvider>
-      <ProductContextProvider>
-        <PharmacyContextProvider>
-          <RootLayoutInner />
-        </PharmacyContextProvider>
-      </ProductContextProvider>
-    </AuthContextProvider>
+    <SupabaseContextProvider>
+      <AuthContextProvider>
+        <ProductContextProvider>
+          <PharmacyContextProvider>
+            <RootLayoutInner />
+          </PharmacyContextProvider>
+        </ProductContextProvider>
+      </AuthContextProvider>
+    </SupabaseContextProvider>
   );
 };
 
