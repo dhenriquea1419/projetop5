@@ -6,14 +6,17 @@ import Constants from 'expo-constants';
 const supabaseUrl = Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_ANON_KEY
 
-const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-})
+// Only create Supabase client if we have valid credentials and are in browser environment
+const supabase = supabaseUrl && supabaseAnonKey && typeof window !== 'undefined' 
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        storage: AsyncStorage,
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: false,
+      },
+    })
+  : null;
 
 interface User {
   id: string;
@@ -26,7 +29,7 @@ interface SupabaseContextType {
   user: User | null;
   isLoading: boolean;
   error: string | null;
-  supabase: SupabaseClient;
+  supabase: SupabaseClient | null;
   signup: (email: string, password: string, name: string, role?: string) => Promise<boolean>;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
@@ -40,30 +43,36 @@ export const SupabaseContextProvider: React.FC<{ children: ReactNode }> = ({ chi
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    checkSession()
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session?.user) {
-          const userData: User = {
-            id: session.user.id,
-            email: session.user.email ?? '',
-            name: session.user.user_metadata?.name ?? '',
-            role: session.user.user_metadata?.role ?? 'vendedor',
+    if (supabase) {
+      checkSession()
+      const { data: authListener } = supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          if (session?.user) {
+            const userData: User = {
+              id: session.user.id,
+              email: session.user.email ?? '',
+              name: session.user.user_metadata?.name ?? '',
+              role: session.user.user_metadata?.role ?? 'vendedor',
+            }
+            setUser(userData)
+          } else {
+            setUser(null)
           }
-          setUser(userData)
-        } else {
-          setUser(null)
+          setIsLoading(false)
         }
-        setIsLoading(false)
-      }
-    )
+      )
 
-    return () => {
-      authListener?.subscription.unsubscribe()
+      return () => {
+        authListener?.subscription.unsubscribe()
+      }
+    } else {
+      setIsLoading(false)
     }
   }, [])
 
   const checkSession = async () => {
+    if (!supabase) return
+    
     try {
       setIsLoading(true)
       const { data } = await supabase.auth.getSession()
@@ -85,6 +94,11 @@ export const SupabaseContextProvider: React.FC<{ children: ReactNode }> = ({ chi
   }
 
   const signup = async (email: string, password: string, name: string, role: string = 'vendedor') => {
+    if (!supabase) {
+      setError('Supabase não está configurado')
+      return false
+    }
+    
     try {
       setError(null)
       setIsLoading(true)
@@ -106,6 +120,11 @@ export const SupabaseContextProvider: React.FC<{ children: ReactNode }> = ({ chi
   }
 
   const login = async (email: string, password: string) => {
+    if (!supabase) {
+      setError('Supabase não está configurado')
+      return false
+    }
+    
     try {
       setError(null)
       setIsLoading(true)
@@ -126,6 +145,8 @@ export const SupabaseContextProvider: React.FC<{ children: ReactNode }> = ({ chi
   }
 
   const logout = async () => {
+    if (!supabase) return
+    
     try {
       setIsLoading(true)
       await supabase.auth.signOut()

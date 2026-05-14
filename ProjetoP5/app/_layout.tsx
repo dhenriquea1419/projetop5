@@ -32,13 +32,15 @@ const RootLayoutInner = () => {
     if (!isLoading) {
       if (user !== null && isLoginRoute) {
         router.replace('/');
-      } else if (user === null && !isLoginRoute) {
-        router.replace('/login');
       }
+      // Temporariamente removido: redirecionamento para login quando não autenticado
+      // else if (user === null && !isLoginRoute) {
+      //   router.replace('/login');
+      // }
     }
   }, [isLoading, user, isLoginRoute, router]);
 
-  const shouldRenderSlot = !isLoading && (user !== null || isLoginRoute);
+  const shouldRenderSlot = !isLoading; // && (user !== null || isLoginRoute);
 
   if (!shouldRenderSlot) {
     return (
