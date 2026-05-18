@@ -32,7 +32,7 @@ interface ProductContextType {
   findCategoryById: (id: string) => Category | undefined;
   findProductById: (id: string) => Product | undefined;
   getProductLabel: (id: string) => string;
-  getProductComponents: (product: Product) => Array<{ produto: Product; quantidade: number }>;
+  getProductComponents: (product: Product) => { produto: Product; quantidade: number }[];
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);

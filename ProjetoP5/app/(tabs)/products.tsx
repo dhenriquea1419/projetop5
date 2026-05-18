@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useProducts } from '../../hooks/useApi';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 
 type Product = {
   id: string;
@@ -20,12 +21,6 @@ type Product = {
   description?: string;
 };
 
-const ScreenHeader: React.FC<{ title: string }> = ({ title }) => (
-  <View style={styles.screenHeader}>
-    <Text style={styles.screenHeaderTitle}>{title}</Text>
-  </View>
-);
-
 const ProductsScreen: React.FC = () => {
   const productsApi = useProducts();
   const [products, setProducts] = useState<Product[]>([]);
@@ -34,26 +29,25 @@ const ProductsScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Carregar produtos da API ao iniciar
-  useEffect(() => {
-    loadProducts();
-  }, []);
-
-  const loadProducts = async () => {
+  const loadProducts = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
       const data = await productsApi.getAll();
       setProducts(data || []);
     } catch (err: any) {
-      // Se erro, usar dados locais vazios
-      console.log('Usando modo local - API não disponível');
+      console.log('Usando modo local - API não disponível', err?.message || err);
       setProducts([]);
-      setError(null);
+      setError('Não foi possível carregar os produtos no momento.');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [productsApi]);
+
+  // Carregar produtos da API ao iniciar
+  useEffect(() => {
+    loadProducts();
+  }, [loadProducts]);
 
   const handleAddComponent = useCallback(() => {
     setShowForm(true);
@@ -62,43 +56,38 @@ const ProductsScreen: React.FC = () => {
   const handleCreateProduct = useCallback(async () => {
     if (newProductName.trim()) {
       try {
-        // Tentar criar na API
         const newProduct = await productsApi.create({
           name: newProductName.trim(),
           price: 0,
           stock: 0,
-          category_id: 'default', // Placeholder
+          category_id: 'default',
         });
 
         if (newProduct && newProduct.id) {
           setProducts((prev) => [newProduct, ...prev]);
         } else {
-          // Fallback para modo local
           setProducts((prev) => [
             {
-              id: Math.random().toString(36).substr(2, 9),
+              id: Math.random().toString(36).slice(2, 11),
               name: newProductName.trim(),
             },
             ...prev,
           ]);
         }
-
-        setNewProductName('');
-        setShowForm(false);
-      } catch (err) {
-        // Criar localmente se API falhar
+      } catch {
         setProducts((prev) => [
           {
-            id: Math.random().toString(36).substr(2, 9),
+            id: Math.random().toString(36).slice(2, 11),
             name: newProductName.trim(),
           },
           ...prev,
         ]);
+      } finally {
         setNewProductName('');
         setShowForm(false);
       }
     }
-  }, [newProductName]);
+  }, [newProductName, productsApi]);
 
   const handleCancel = useCallback(() => {
     setNewProductName('');
@@ -124,7 +113,7 @@ const ProductsScreen: React.FC = () => {
 
   const ListHeaderComponent = useCallback(() => (
     <View>
-      <ScreenHeader title="Produtos" />
+      <ScreenHeader title="Produtos" variant="left-aligned" />
       <TouchableOpacity
         style={styles.addProductButton}
         onPress={handleAddComponent}
@@ -171,8 +160,9 @@ const ProductsScreen: React.FC = () => {
           </TouchableOpacity>
         )}
       </View>
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
     </View>
-  ), [showForm, newProductName, handleAddComponent, handleCreateProduct, handleCancel, isLoading, products.length]);
+  ), [showForm, newProductName, handleAddComponent, handleCreateProduct, handleCancel, isLoading, products.length, loadProducts, error]);
 
   return (
     <KeyboardAvoidingView
@@ -333,6 +323,13 @@ const styles = StyleSheet.create({
   productStock: {
     fontSize: 12,
     color: '#666',
+  },
+  errorText: {
+    color: '#b00020',
+    marginHorizontal: 16,
+    marginBottom: 12,
+    fontSize: 14,
+    textAlign: 'center',
   },
   headerFooter: {
     flexDirection: 'row',

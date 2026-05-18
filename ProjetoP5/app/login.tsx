@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   TextInput,
@@ -17,11 +17,18 @@ import { useSupabase } from '../hooks/SupabaseContext';
 export default function LoginScreen() {
   const router = useRouter();
   const { signIn, isLoading: authLoading, error: authError } = useAuth();
-  const { login: supabaseLogin, isLoading: supabaseLoading, error: supabaseError } = useSupabase();
+  const { supabase, login: supabaseLogin, isLoading: supabaseLoading, error: supabaseError } = useSupabase();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [useSupabaseBackend, setUseSupabaseBackend] = useState(false);
+  const canUseSupabaseBackend = !!supabase;
+
+  useEffect(() => {
+    if (!canUseSupabaseBackend && useSupabaseBackend) {
+      setUseSupabaseBackend(false);
+    }
+  }, [canUseSupabaseBackend, useSupabaseBackend]);
 
   const isLoading = authLoading || supabaseLoading;
   const error = useSupabaseBackend ? supabaseError : authError;
@@ -115,14 +122,22 @@ export default function LoginScreen() {
             <View style={styles.toggleContainer}>
               <Text style={styles.toggleLabel}>Backend:</Text>
               <TouchableOpacity
-                style={[styles.toggleButton, useSupabaseBackend && styles.toggleButtonActive]}
-                onPress={() => setUseSupabaseBackend(!useSupabaseBackend)}
+                style={[
+                  styles.toggleButton,
+                  useSupabaseBackend && styles.toggleButtonActive,
+                  !canUseSupabaseBackend && styles.toggleButtonDisabled,
+                ]}
+                onPress={() => canUseSupabaseBackend && setUseSupabaseBackend(!useSupabaseBackend)}
+                disabled={!canUseSupabaseBackend}
               >
                 <Text style={styles.toggleText}>
                   {useSupabaseBackend ? 'Supabase 🌐' : 'Local 📱'}
                 </Text>
               </TouchableOpacity>
             </View>
+            {!canUseSupabaseBackend && (
+              <Text style={styles.toggleHelp}>Supabase não configurado localmente</Text>
+            )}
 
             {/* Login Button */}
             <TouchableOpacity
@@ -326,9 +341,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#14838d',
     borderColor: '#14838d',
   },
+  toggleButtonDisabled: {
+    opacity: 0.6,
+  },
   toggleText: {
     fontSize: 12,
     fontWeight: '600',
     color: '#0f4f55',
+  },
+  toggleHelp: {
+    marginTop: 8,
+    color: '#6b7d82',
+    fontSize: 13,
+    textAlign: 'center',
   },
 });

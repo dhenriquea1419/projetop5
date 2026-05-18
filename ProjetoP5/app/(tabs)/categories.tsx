@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, FlatList } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, TextInput, StyleSheet, FlatList } from 'react-native';
 import { useProducts } from '@/hooks/ProductContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { StandardButton } from '@/components/ui/StandardButton';
@@ -15,7 +15,7 @@ export default function CategoriesScreen() {
   const [codigo, setCodigo] = useState('');
   const [descricao, setDescricao] = useState('');
 
-  const handleAddCategory = () => {
+  const handleAddCategory = useCallback(() => {
     if (!codigo.trim() || !descricao.trim()) {
       alert('Preencha código e descrição da categoria.');
       return;
@@ -28,43 +28,12 @@ export default function CategoriesScreen() {
 
     setCodigo('');
     setDescricao('');
-  };
+  }, [codigo, descricao, addCategory]);
 
   const renderCategory = ({ item }: { item: Category }) => (
     <View style={styles.categoryItem}>
       <Text style={styles.codigoText}>{item.codigo}</Text>
       <Text style={styles.descricaoText}>{item.descricao}</Text>
-    </View>
-  );
-
-  const ListHeaderComponent = () => (
-    <View style={styles.headerContainer}>
-      <ScreenHeader title="Categorias" />
-      <View style={styles.formContainer}>
-        <Text style={styles.label}>Código:</Text>
-        <TextInput
-          style={styles.input}
-          value={codigo}
-          onChangeText={setCodigo}
-          placeholder="Digite o código"
-          autoCapitalize="characters"
-        />
-        <Text style={styles.label}>Descrição:</Text>
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          value={descricao}
-          onChangeText={setDescricao}
-          placeholder="Digite a descrição"
-          multiline
-          numberOfLines={3}
-        />
-        <View style={styles.buttonContainer}>
-          <StandardButton
-            text="Adicionar Categoria"
-            onPress={handleAddCategory}
-          />
-        </View>
-      </View>
     </View>
   );
 
@@ -75,28 +44,68 @@ export default function CategoriesScreen() {
   );
 
   return (
-    <FlatList
-      data={categories}
-      keyExtractor={(item) => item.codigo}
-      renderItem={renderCategory}
-      ListHeaderComponent={ListHeaderComponent}
-      ListEmptyComponent={ListEmptyComponent}
-      ListFooterComponent={StandardFooter}
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-    />
+    <View style={styles.container}>
+      <View style={styles.headerSection}>
+        <ScreenHeader title="Categorias" />
+        <View style={styles.formContainer}>
+          <Text style={styles.label}>Código:</Text>
+          <TextInput
+            style={styles.input}
+            value={codigo}
+            onChangeText={setCodigo}
+            placeholder="Digite o código"
+            autoCapitalize="characters"
+            keyboardType="default"
+          />
+          <Text style={styles.label}>Descrição:</Text>
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            value={descricao}
+            onChangeText={setDescricao}
+            placeholder="Digite a descrição"
+            multiline
+            numberOfLines={3}
+            textAlignVertical="top"
+          />
+          <View style={styles.buttonContainer}>
+            <StandardButton
+              text="Adicionar Categoria"
+              onPress={handleAddCategory}
+            />
+          </View>
+        </View>
+      </View>
+      <FlatList
+        data={categories}
+        keyExtractor={(item) => item.codigo}
+        renderItem={renderCategory}
+        ListEmptyComponent={ListEmptyComponent}
+        ListFooterComponent={StandardFooter}
+        style={styles.list}
+        contentContainerStyle={styles.contentContainer}
+        keyboardShouldPersistTaps="handled"
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f2f6f8',
   },
   contentContainer: {
     flexGrow: 1,
+    paddingBottom: 24,
   },
-  headerContainer: {
-    backgroundColor: '#fff',
+  headerSection: {
+    backgroundColor: 'transparent',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  list: {
+    flex: 1,
+    backgroundColor: '#f2f6f8',
   },
   formContainer: {
     padding: 16,

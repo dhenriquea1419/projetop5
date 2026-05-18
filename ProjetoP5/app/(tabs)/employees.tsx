@@ -4,7 +4,6 @@ import { usePharmacy } from '@/hooks/PharmacyContext';
 import { useProducts } from '@/hooks/ProductContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { StandardButton } from '@/components/ui/StandardButton';
-import { StandardFooter } from '@/components/ui/StandardFooter';
 
 export default function EmployeesScreen() {
   const {

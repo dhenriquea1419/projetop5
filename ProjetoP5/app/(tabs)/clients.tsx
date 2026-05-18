@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ScrollView } from 'react-native';
 import { usePharmacy } from '@/hooks/PharmacyContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { StandardButton } from '@/components/ui/StandardButton';
-import { StandardFooter } from '@/components/ui/StandardFooter';
 
 export default function ClientsScreen() {
   const {
     clients,
-    dependents,
     addClient,
     addDependent,
     getClientDependents,

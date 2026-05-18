@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/AuthContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
@@ -11,28 +11,17 @@ export default function ProfileScreen() {
   const { user, signOut } = useAuth();
 
   const handleLogout = () => {
-    const doSignOut = () => {
-      signOut();
-      router.replace('/login');
-    };
-
-    if (Platform.OS === 'web') {
-      const confirmed = window.confirm('Tem certeza que deseja sair da aplicação?');
-      if (confirmed) {
-        doSignOut();
-      }
-      return;
-    }
-
     Alert.alert('Sair', 'Tem certeza que deseja sair da aplicação?', [
       {
         text: 'Cancelar',
-        onPress: () => {},
         style: 'cancel',
       },
       {
         text: 'Sair',
-        onPress: doSignOut,
+        onPress: () => {
+          signOut();
+          router.replace('/login');
+        },
         style: 'destructive',
       },
     ]);

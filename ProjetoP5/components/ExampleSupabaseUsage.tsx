@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useSupabase } from '../hooks/SupabaseContext';
+import { useProducts as useProductsApi } from '../hooks/useApi';
 
 export default function ExampleLoginScreen() {
   const { login, isLoading, error } = useSupabase();
@@ -59,10 +60,9 @@ export default function ExampleLoginScreen() {
 }
 
 export function ExampleProductsScreen() {
-  const { useProducts } = require('../hooks/useApi');
-  const products = useProducts();
+  const products = useProductsApi();
 
-  const [productsData, setProductsData] = useState([]);
+  const [productsData, setProductsData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadProducts = async () => {

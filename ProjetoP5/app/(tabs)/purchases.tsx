@@ -150,7 +150,7 @@ const PurchasesScreen: React.FC = () => {
 
       <Text style={styles.sectionTitle}>Compras registradas</Text>
     </View>
-  ), [name, value, date, currentItems.length, handleAddItem, handleCreatePurchase]);
+  ), [name, value, date, currentItems, handleAddItem, handleCreatePurchase]);
 
   return (
     <FlatList

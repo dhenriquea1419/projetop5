@@ -3,7 +3,6 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, FlatLi
 import { usePharmacy } from '@/hooks/PharmacyContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { StandardButton } from '@/components/ui/StandardButton';
-import { StandardFooter } from '@/components/ui/StandardFooter';
 
 export default function ProgressCardsScreen() {
   const {

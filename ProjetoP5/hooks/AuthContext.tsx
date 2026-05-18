@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface User {
   id: string;
@@ -15,7 +16,9 @@ interface AuthContextType {
   signOut: () => void;
 }
 
-const mockUsers: Array<User & { password: string }> = [
+const STORAGE_KEY = '@projetop5:user';
+
+const mockUsers: (User & { password: string })[] = [
   {
     id: '1',
     name: 'Vendedor João',
@@ -47,25 +50,24 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Mantemos o comportamento igual em todas as plataformas,
-    // mas restauramos o usuário quando houver sessão salva.
-    const storageAvailable = typeof localStorage !== 'undefined';
-    const storedUser = storageAvailable ? localStorage.getItem('user') : null;
-    if (storedUser) {
+    const restoreSession = async () => {
       try {
-        const parsedUser = JSON.parse(storedUser) as User;
-        setUser(parsedUser);
-      } catch {
-        if (storageAvailable) {
-          localStorage.removeItem('user');
+        const storedUser = await AsyncStorage.getItem(STORAGE_KEY);
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser) as User;
+          setUser(parsedUser);
         }
+      } catch {
+        await AsyncStorage.removeItem(STORAGE_KEY);
+      } finally {
+        setIsLoading(false);
       }
-    }
-    setIsLoading(false);
+    };
+
+    restoreSession();
   }, []);
 
   const signIn = async (email: string, password: string): Promise<boolean> => {
-    console.log('signIn called with:', email);
     setError(null);
 
     const foundUser = mockUsers.find((u) => u.email === email && u.password === password);
@@ -78,23 +80,24 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         role: foundUser.role,
       };
       setUser(userToSet);
-      if (typeof localStorage !== 'undefined') {
-        localStorage.setItem('user', JSON.stringify(userToSet));
+      try {
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(userToSet));
+      } catch {
+        // ignore storage failures, keep user session in memory
       }
-      console.log('user updated:', userToSet);
       return true;
-    } else {
-      setError('Credenciais inválidas');
-      return false;
     }
+
+    setError('Credenciais inválidas');
+    return false;
   };
 
   const signOut = () => {
     setUser(null);
     setError(null);
-    if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem('user');
-    }
+    AsyncStorage.removeItem(STORAGE_KEY).catch(() => {
+      // ignore
+    });
   };
 
   return (

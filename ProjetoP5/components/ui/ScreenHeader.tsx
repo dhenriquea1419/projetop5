@@ -36,24 +36,23 @@ export function ScreenHeader({
 
 const styles = StyleSheet.create({
   header: {
+    width: '100%',
     backgroundColor: '#14838d',
-    paddingTop: 44,
-    paddingBottom: 22,
-    paddingHorizontal: 0,
+    paddingTop: 30,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
     alignItems: 'center',
-    marginHorizontal: -20,
-    marginTop: -20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
   headerLeftAligned: {
     alignItems: 'flex-start',
-    paddingHorizontal: 20,
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
-    paddingHorizontal: 20,
   },
   titleRowLeftAligned: {
     justifyContent: 'flex-start',

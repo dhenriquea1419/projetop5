@@ -6,34 +6,41 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 const menuItems = [
-  { title: 'Home', path: '/(tabs)/' },
-  { title: 'Categorias', path: '/(tabs)/categories' },
-  { title: 'Produtos', path: '/(tabs)/products' },
-  { title: 'Clientes', path: '/(tabs)/clients' },
-  { title: 'Funcionários', path: '/(tabs)/employees' },
-  { title: 'Compras', path: '/(tabs)/purchases' },
-  { title: 'Cartões', path: '/(tabs)/progress-cards' },
-  { title: 'Perfil', path: '/(tabs)/profile' },
-];
+  { title: 'Home', path: '/' },
+  { title: 'Categorias', path: '/categories' },
+  { title: 'Produtos', path: '/products' },
+  { title: 'Clientes', path: '/clients' },
+  { title: 'Funcionários', path: '/employees' },
+  { title: 'Compras', path: '/purchases' },
+  { title: 'Cartões', path: '/progress-cards' },
+  { title: 'Perfil', path: '/profile' },
+] as const;
+
+type MenuItemPath = typeof menuItems[number]['path'];
 
 export default function TabLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const colorScheme = useColorScheme();
 
-  const handleMenuItemPress = (path: string) => {
+  const handleMenuItemPress = (path: MenuItemPath) => {
     setIsMenuOpen(false);
     router.push(path);
   };
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={[styles.header, { backgroundColor: Colors[colorScheme ?? 'light'].tint }]}> 
-        <Pressable style={styles.menuButton} onPress={() => setIsMenuOpen(true)}>
-          <Text style={styles.menuIcon}>☰</Text>
-          <Text style={styles.menuLabel}>Menu</Text>
-        </Pressable>
-      </SafeAreaView>
+      <View style={[styles.headerWrapper, { backgroundColor: Colors[colorScheme ?? 'light'].tint }]}> 
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.headerContent}>
+            <Pressable style={styles.menuButton} onPress={() => setIsMenuOpen(true)}>
+              <Text style={styles.menuIcon}>☰</Text>
+              <Text style={styles.menuLabel}>Menu</Text>
+            </Pressable>
+            <Text style={styles.headerTitle}>Farmácia Control</Text>
+          </View>
+        </SafeAreaView>
+      </View>
 
       <View style={styles.tabsContainer}>
         <Tabs
@@ -75,20 +82,51 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    paddingVertical: 16,
+  headerWrapper: {
+    width: '100%',
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
+    backgroundColor: 'transparent',
+  },
+  safeArea: {
     paddingHorizontal: 18,
+    backgroundColor: 'transparent',
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
   },
   menuButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(20, 131, 141, 0.18)',
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
   },
   menuIcon: {
-    fontSize: 28,
-    color: '#ffffff',
-    marginRight: 12,
+    fontSize: 22,
+    color: '#14838d',
+    marginRight: 10,
   },
   menuLabel: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#14838d',
+  },
+  headerTitle: {
     fontSize: 18,
     fontWeight: '700',
     color: '#ffffff',
