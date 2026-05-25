@@ -160,70 +160,95 @@ cd pharmastock
 
 ### Executar com Docker Compose
 
+Antes de rodar o Compose, crie um arquivo `.env` na raiz com as variáveis do Supabase:
+
+```env
+SUPABASE_URL=https://seu-projeto.supabase.co
+SUPABASE_ANON_KEY=anon_key_aqui
+SUPABASE_SERVICE_ROLE_KEY=service_role_key_aqui
+JWT_SECRET=uma-chave-secreta
+```
+
 ```bash
 docker-compose up --build
 ```
+
+A aplicação ficará disponível em:
+
+* Backend: http://localhost:3000
+* Frontend: http://localhost:19006
 
 ---
 
 ### Executar Manualmente
 
-### Backend
+#### Backend
 
 ```bash
-cd backend
+cd api-supabase
 npm install
-npm start
+npm run dev
 ```
 
-> O backend será executado na porta **5000**
+O backend será executado na porta **3000**.
 
-### Frontend
+#### Frontend
 
 ```bash
-cd frontend
+cd ProjetoP5
 npm install
 npm start
 ```
 
 ---
 
-## 🌿 Fluxo de Branches (GitFlow)
+## 🌿 Fluxo de Branches
 
 Estrutura principal:
 
-* `main` → versão estável
-* `develop` → desenvolvimento principal
-* `feature/*` → novas funcionalidades
-* `hotfix/*` → correções urgentes
+* `main` → versão estável pronta para entrega
+* `develop` → desenvolvimento integrado
+* `feature/*` → novas funcionalidades ou correções incrementais
+* `hotfix/*` → correções urgentes em produção
+
+Para um fluxo DevOps claro:
+
+1. Crie branch de feature: `git checkout -b feature/<nome>`
+2. Faça mudanças, teste localmente e valide builds
+3. Commit com mensagem descritiva
+4. Push para remoto e abra Pull Request
+5. Aguarde aprovação antes de mesclar em `develop` ou `main`
 
 ---
 
-## 🔍 Qualidade de Código
+## 🔍 Integração Contínua e Qualidade de Código
 
-O projeto utiliza:
+O projeto usa GitHub Actions como pipeline principal para:
 
-### Jenkins
+* instalar dependências
+* executar lint e testes no frontend
+* executar build do frontend
+* validar o backend com `node --check`
+* rodar análise de qualidade com SonarCloud
 
-Para automação de:
+### SonarCloud
 
-* Build
-* Testes
-* Integração contínua (CI)
+A análise SonarCloud depende destes segredos no GitHub:
 
-### SonarQube
+* `SONAR_TOKEN`
+* `SONAR_ORGANIZATION`
 
-Para análise de:
-
-* Bugs
-* Vulnerabilidades
-* Code Smells
-* Qualidade geral do código
+Os resultados ajudam a identificar bugs, vulnerabilidades e code smells antes de mesclar.
 
 ---
 
 ## 📚 Conclusão
 
-O projeto **Sapé Pharma** foi escolhido por ser simples, viável e totalmente alinhado aos requisitos da disciplina de DevOps.
+O projeto **Sapé Pharma** está organizado para suportar integração entre frontend, backend e banco de dados via Supabase.
 
-Ele permite aplicar de forma prática os principais conceitos estudados durante o semestre, com foco em desenvolvimento moderno, automação e boas práticas de engenharia de software.
+A entrega foca em:
+
+* pipeline automatizada com GitHub Actions
+* análise de qualidade com SonarCloud
+* execução local via Docker Compose e comandos manuais
+* fluxo de branch claro para trabalho em equipe
