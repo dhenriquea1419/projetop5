@@ -26,7 +26,7 @@ export default function FuncionariosList() {
                 <Text style={styles.employeeName}>{item.nome}</Text>
                 <Text style={styles.employeeInfo}>Matrícula: {item.matricula}</Text>
                 <Text style={styles.employeeInfo}>CPF: {item.cpf}</Text>
-                <Text style={styles.employeeInfo}>Salário: R$ {item.salario?.toFixed ? (item.salario as number).toFixed(2) : item.salario}</Text>
+                <Text style={styles.employeeInfo}>Salário: R$ {typeof item.salario === 'number' ? item.salario.toFixed(2) : item.salario}</Text>
                 <Text style={styles.employeeInfo}>Tipo: {isRep ? 'Representante' : 'Vendedor'}</Text>
                 {isRep ? (
                   <>
