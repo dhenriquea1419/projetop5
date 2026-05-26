@@ -5,11 +5,13 @@ import Constants from 'expo-constants';
 import { API_CONFIG } from '../constants/api';
 
 const supabaseUrl =
-  Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_URL ??
-  process.env.EXPO_PUBLIC_SUPABASE_URL;
+  process.env.EXPO_PUBLIC_SUPABASE_URL ??
+  Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey =
-  Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_ANON_KEY ??
-  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ??
+  Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+const apiBaseUrl =
+  process.env.EXPO_PUBLIC_API_URL ?? API_CONFIG.API_URL;
 
 const createSupabaseClient = async () => {
   if (Platform.OS === 'web') {
@@ -134,11 +136,11 @@ export const SupabaseContextProvider: React.FC<{ children: ReactNode }> = ({ chi
   }, [supabase, checkSession]);
 
   const apiCall = async (method: string, path: string, body?: any) => {
-    if (!API_CONFIG.API_URL) {
+    if (!apiBaseUrl) {
       throw new Error('API backend não está configurado. Atualize constants/api.ts.');
     }
 
-    const response = await fetch(`${API_CONFIG.API_URL}${path}`, {
+    const response = await fetch(`${apiBaseUrl}${path}`, {
       method,
       headers: {
         'Content-Type': 'application/json',

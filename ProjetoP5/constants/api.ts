@@ -1,13 +1,13 @@
-// ⚠️ IMPORTANTE: Substitua pelos seus valores reais do Supabase!
+// ⚠️ IMPORTANTE: Substitua pelos valores reais do Supabase se necessário.
 // Acesse: supabase.com → seu projeto → Settings → API
 
 export const API_CONFIG = {
   // Supabase
-  SUPABASE_URL: 'https://seu-projeto.supabase.co', // Ex: https://abcdef123.supabase.co
-  SUPABASE_ANON_KEY: 'sua-chave-anonima', // Copie de Settings → API → anon public key
-  
+  SUPABASE_URL: 'http://127.0.0.1:54321',
+  SUPABASE_ANON_KEY: '',
+
   // API Backend
-  API_URL: 'http://192.168.1.100:3000/api', // ⚠️ Mude para seu IP local!
+  API_URL: 'http://localhost:3000/api',
   API_TIMEOUT: 10000, // 10 segundos
 };
 

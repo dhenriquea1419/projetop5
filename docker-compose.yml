@@ -1,33 +1,39 @@
-﻿version: '3.8'
+version: '3.8'
 
 services:
   api:
     build:
       context: ./api-supabase
       dockerfile: Dockerfile
+    container_name: pharmacy-backend
     ports:
       - "3000:3000"
     volumes:
       - ./api-supabase:/app
     environment:
       SUPABASE_URL: ${SUPABASE_URL}
-      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
-      JWT_SECRET: ${JWT_SECRET:-supersecret}
+      JWT_SECRET: ${JWT_SECRET:-dev-secret}
       PORT: 3000
       NODE_ENV: development
+      USE_MOCK_DB: "true"
     restart: unless-stopped
 
   frontend:
     build:
       context: ./ProjetoP5
       dockerfile: Dockerfile
+    container_name: pharmacy-frontend
     ports:
       - "19006:19006"
     volumes:
       - ./ProjetoP5:/app
     environment:
       REACT_APP_API_URL: http://localhost:3000
+      EXPO_PUBLIC_API_URL: http://localhost:3000/api
+      EXPO_PUBLIC_SUPABASE_URL: ${EXPO_PUBLIC_SUPABASE_URL:-http://127.0.0.1:54321}
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: ${EXPO_PUBLIC_SUPABASE_ANON_KEY:-}
     depends_on:
       - api
     restart: unless-stopped
+
