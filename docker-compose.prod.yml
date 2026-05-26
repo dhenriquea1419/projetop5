@@ -1,22 +1,30 @@
-version: '3.8'
-
 services:
-  api:
+  backend:
     build:
       context: ./api-supabase
       dockerfile: Dockerfile
+    container_name: pharmacy-backend
     ports:
       - "3000:3000"
     environment:
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
-      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
-      - JWT_SECRET=${JWT_SECRET}
-      - PORT=3000
-      - NODE_ENV=production
+      PORT: "3000"
+      NODE_ENV: "production"
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      JWT_SECRET: ${JWT_SECRET:-prod-secret}
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+
+  frontend:
+    build:
+      context: ./ProjetoP5
+      dockerfile: Dockerfile
+    container_name: pharmacy-frontend
+    ports:
+      - "19006:19006"
+    depends_on:
+      - backend
+    environment:
+      EXPO_PUBLIC_API_URL: http://localhost:3000/api
+      EXPO_PUBLIC_SUPABASE_URL: ${EXPO_PUBLIC_SUPABASE_URL:-http://127.0.0.1:54321}
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: ${EXPO_PUBLIC_SUPABASE_ANON_KEY:-}
+    restart: unless-stopped

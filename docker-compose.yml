@@ -1,52 +1,30 @@
-version: '3.8'
-
 services:
-  db:
-    image: mysql:8.0
-    container_name: pharmacy-db
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: pharmacy_db
-      MYSQL_USER: root
-      MYSQL_PASSWORD: 1234
-    volumes:
-      - mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
-      interval: 10s
-    restart: unless-stopped
-
   backend:
-    build: ./backend
+    build:
+      context: ./api-supabase
+      dockerfile: Dockerfile
     container_name: pharmacy-backend
     ports:
       - "3000:3000"
-    depends_on:
-      db:
-        condition: service_healthy
     environment:
-      DB_HOST: db
-      DB_USER: pharmacy_user
-      DB_PASSWORD: userpass
-      DB_NAME: pharmacy_db
-      DB_PORT: 3306
-    restart: always
+      PORT: "3000"
+      NODE_ENV: "development"
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      JWT_SECRET: ${JWT_SECRET:-dev-secret}
+    restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./ProjetoP5
+      dockerfile: Dockerfile
     container_name: pharmacy-frontend
     ports:
       - "19006:19006"
     depends_on:
       - backend
     environment:
-      REACT_APP_API_URL: http://backend:3000
-    restart: always
-
-volumes:
-  mysql_data:
-    driver: local
+      EXPO_PUBLIC_API_URL: http://localhost:3000/api
+      EXPO_PUBLIC_SUPABASE_URL: ${EXPO_PUBLIC_SUPABASE_URL:-http://127.0.0.1:54321}
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: ${EXPO_PUBLIC_SUPABASE_ANON_KEY:-}
+    restart: unless-stopped
