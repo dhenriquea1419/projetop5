@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>API Demo - Clients</title>
+  <style>body{font-family:Arial;margin:20px} input,button{padding:6px;margin:4px}</style>
+</head>
+<body>
+  <h1>Clients Demo</h1>
+  <form id="form">
+    <input id="name" placeholder="Name" required />
+    <input id="email" placeholder="Email" required />
+    <button type="submit">Create</button>
+  </form>
+  <div>
+    <button id="refresh">Refresh list</button>
+  </div>
+  <ul id="list"></ul>
+  <script>
+    const base = '/api/clients';
+    async function list(){
+      const res = await fetch(base);
+      const data = await res.json();
+      const ul = document.getElementById('list');
+      ul.innerHTML = '';
+      data.forEach(c=>{
+        const li = document.createElement('li');
+        li.textContent = `${c.id} — ${c.name} <${c.email}>`;
+        const del = document.createElement('button'); del.textContent='Delete'; del.onclick=async()=>{ await fetch(base+'/'+c.id,{method:'DELETE'}); list(); };
+        const upd = document.createElement('button'); upd.textContent='Edit'; upd.onclick=async()=>{ const newName = prompt('New name', c.name); if(newName){ await fetch(base+'/'+c.id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:newName,email:c.email})}); list(); }};
+        li.appendChild(document.createTextNode(' ')); li.appendChild(upd); li.appendChild(document.createTextNode(' ')); li.appendChild(del);
+        ul.appendChild(li);
+      });
+    }
+    document.getElementById('form').addEventListener('submit', async(e)=>{
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      await fetch(base,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email})});
+      document.getElementById('name').value=''; document.getElementById('email').value='';
+      list();
+    });
+    document.getElementById('refresh').addEventListener('click',list);
+    list();
+  </script>
+</body>
+</html>

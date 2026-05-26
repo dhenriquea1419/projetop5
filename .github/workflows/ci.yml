@@ -45,7 +45,8 @@ jobs:
         run: npm test
 
       - name: Run SonarCloud analysis
-        uses: SonarSource/sonarcloud-github-action@master
+        if: ${{ secrets.SONAR_TOKEN && secrets.SONAR_ORGANIZATION }}
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
         with:
           args: >
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
@@ -54,3 +55,7 @@ jobs:
             -Dsonar.projectName=ProjetoP5
             -Dsonar.sources=ProjetoP5,api-supabase
             -Dsonar.exclusions=**/node_modules/**,**/.expo/**,**/*.png,**/*.jpg,**/*.json,**/*.md
+
+      - name: Skip SonarCloud analysis (no secrets)
+        if: ${{ !secrets.SONAR_TOKEN || !secrets.SONAR_ORGANIZATION }}
+        run: echo "SONAR_TOKEN or SONAR_ORGANIZATION not configured, skipping SonarCloud analysis."

@@ -13,10 +13,10 @@ services:
     environment:
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
-      JWT_SECRET: ${JWT_SECRET:-dev-secret}
+      JWT_SECRET: ${JWT_SECRET:-supersecret}
+      USE_MOCK_DB: "true"
       PORT: 3000
       NODE_ENV: development
-      USE_MOCK_DB: "true"
     restart: unless-stopped
 
   frontend:

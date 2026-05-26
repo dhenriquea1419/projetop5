@@ -7,6 +7,7 @@ const log = require('./utils/logger');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const path = require('path');
 
 // Middlewares
 app.use(cors());
@@ -23,6 +24,9 @@ app.use((req, res, next) => {
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// Serve static demo when present
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Rotas da API
 app.use('/api', routes);

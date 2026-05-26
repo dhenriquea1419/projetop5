@@ -1,10 +1,15 @@
 const supabase = require('../config/supabase');
 const log = require('../utils/logger');
+const mockDb = process.env.USE_MOCK_DB === 'true' ? require('../mockDb') : null;
 
 const clientController = {
   getAll: async (req, res) => {
     try {
       const { search } = req.query;
+      if (mockDb) {
+        const data = await mockDb.getAll(search);
+        return res.json(data);
+      }
 
       let query = supabase.from('clients').select('*');
 
@@ -26,6 +31,11 @@ const clientController = {
   getById: async (req, res) => {
     try {
       const { id } = req.params;
+      if (mockDb) {
+        const data = await mockDb.getById(id);
+        if (!data) return res.status(404).json({ error: 'Cliente não encontrado' });
+        return res.json(data);
+      }
 
       const { data, error } = await supabase
         .from('clients')
@@ -49,6 +59,11 @@ const clientController = {
 
       if (!name || !email) {
         return res.status(400).json({ error: 'Nome e email são obrigatórios' });
+      }
+      if (mockDb) {
+        const item = await mockDb.create({ name, email, phone, cpf, address, city, state, zipcode });
+        log.info('Cliente (mock) criado', name);
+        return res.status(201).json(item);
       }
 
       const { data, error } = await supabase
@@ -83,6 +98,12 @@ const clientController = {
       const { id } = req.params;
       const { name, email, phone, cpf, address, city, state, zipcode } = req.body;
 
+      if (mockDb) {
+        const updated = await mockDb.update(id, { name, email, phone, cpf, address, city, state, zipcode });
+        if (!updated) return res.status(404).json({ error: 'Cliente não encontrado' });
+        log.info('Cliente (mock) atualizado', id);
+        return res.json(updated);
+      }
       const { data, error } = await supabase
         .from('clients')
         .update({
@@ -112,6 +133,12 @@ const clientController = {
   delete: async (req, res) => {
     try {
       const { id } = req.params;
+      if (mockDb) {
+        const ok = await mockDb.delete(id);
+        if (!ok) return res.status(404).json({ error: 'Cliente não encontrado' });
+        log.info('Cliente (mock) deletado', id);
+        return res.json({ message: 'Cliente deletado com sucesso' });
+      }
 
       const { error } = await supabase
         .from('clients')
