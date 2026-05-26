@@ -1,5 +1,5 @@
-# Use a imagem base do Node.js
-FROM node:18-alpine
+# Use a imagem base do Node.js compatível com @supabase/supabase-js
+FROM node:20-alpine
 
 # Definir diretório de trabalho
 WORKDIR /app
