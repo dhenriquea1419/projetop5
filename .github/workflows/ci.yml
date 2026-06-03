@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install frontend dependencies
+        working-directory: ProjetoP5
+        run: npm install
+
+      - name: Install backend dependencies
+        working-directory: api-supabase
+        run: npm install
+
+      - name: Run frontend lint
+        working-directory: ProjetoP5
+        run: npm run lint
+
+      - name: Run frontend tests
+        working-directory: ProjetoP5
+        run: npm test
+
+      - name: Run frontend build
+        working-directory: ProjetoP5
+        run: npm run build
+
+      - name: Run backend tests
+        working-directory: api-supabase
+        run: npm test
+
+      - name: Run SonarCloud analysis
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          args: >
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+            -Dsonar.projectKey=projetop5
+            -Dsonar.projectName=ProjetoP5
+            -Dsonar.sources=ProjetoP5,api-supabase
+            -Dsonar.exclusions=**/node_modules/**,**/.expo/**,**/*.png,**/*.jpg,**/*.json,**/*.md
