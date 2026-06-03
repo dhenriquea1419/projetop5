@@ -115,12 +115,11 @@ Principal funcionalidade do sistema:
 
 ### Back-end
 
-* Node.js
-* Express.js
+* Supabase
 
 ### Banco de Dados
 
-* MySQL
+* MySQL (integrado dentro do Supabase)
 
 ### Conteinerização
 
@@ -162,8 +161,8 @@ Principal funcionalidade do sistema:
 ### Clonar o Repositório
 
 ```bash
-git clone https://github.com/seu-usuario/pharmastock.git
-cd pharmastock
+https://github.com/dhenriquea1419/projetop5.git
+cd projetop5
 ```
 
 ---
@@ -177,23 +176,17 @@ docker-compose up --build
 ---
 
 ### Executar Manualmente
-
-### Backend
-
 ```bash
-cd backend
 npm install
-npm start
 ```
 
-> O backend será executado na porta **5000**
 
 ### Frontend
 
 ```bash
-cd frontend
-npm install
-npm start
+cd Pharmacyp5
+npx expo install
+npx expo start
 ```
 
 ---
