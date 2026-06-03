@@ -12,6 +12,16 @@ O **Sapé Pharma** é um sistema web desenvolvido para o gerenciamento de vendas
 * Gustavo Fernando
 
 ---
+## ⚠️ Aviso Importante sobre o Histórico de Versionamento
+
+Durante o desenvolvimento do projeto ocorreu um problema no repositório que resultou na perda do histórico de commits da branch `main`.
+
+Entretanto, o trabalho realizado pelos integrantes não foi perdido. Os commits individuais permanecem registrados nas demais branches utilizadas durante o desenvolvimento, seguindo o fluxo de trabalho adotado pela equipe.
+
+Caso seja necessário verificar a participação e colaboração de cada integrante, recomenda-se consultar o histórico das branches de desenvolvimento, onde é possível visualizar as contribuições realizadas por cada membro do grupo, incluindo implementações, correções e evoluções do sistema.
+
+Dessa forma, mesmo sem o histórico completo na branch principal, as evidências de colaboração e desenvolvimento permanecem disponíveis no repositório por meio das demais branches.
+---
 
 ## 🎯 Objetivo do Sistema
 
